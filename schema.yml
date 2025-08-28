@@ -1,0 +1,215 @@
+openapi: 3.0.3
+info:
+  title: Weather API
+  version: 1.0.0
+  description: API provides access to summarized weather data parsed from the UK MetOffice.
+paths:
+  /api/climate/:
+    get:
+      operationId: climate_list
+      description: Climate Record ViewSet
+      parameters:
+        - in: query
+          name: dataset
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - in: query
+          name: year
+          schema:
+            type: integer
+      tags:
+        - climate
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedClimateRecordList"
+          description: ""
+  /api/climate/{id}/:
+    get:
+      operationId: climate_retrieve
+      description: Climate Record ViewSet
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this climate record.
+          required: true
+      tags:
+        - climate
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClimateRecord"
+          description: ""
+components:
+  schemas:
+    ClimateRecord:
+      type: object
+      description: Climate Record Serializer
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        dataset:
+          $ref: "#/components/schemas/DatasetEnum"
+        year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        jan:
+          type: number
+          format: double
+          nullable: true
+        feb:
+          type: number
+          format: double
+          nullable: true
+        mar:
+          type: number
+          format: double
+          nullable: true
+        apr:
+          type: number
+          format: double
+          nullable: true
+        may:
+          type: number
+          format: double
+          nullable: true
+        jun:
+          type: number
+          format: double
+          nullable: true
+        jul:
+          type: number
+          format: double
+          nullable: true
+        aug:
+          type: number
+          format: double
+          nullable: true
+        sep:
+          type: number
+          format: double
+          nullable: true
+        oct:
+          type: number
+          format: double
+          nullable: true
+        nov:
+          type: number
+          format: double
+          nullable: true
+        dec:
+          type: number
+          format: double
+          nullable: true
+        win:
+          type: number
+          format: double
+          nullable: true
+        spr:
+          type: number
+          format: double
+          nullable: true
+        sum:
+          type: number
+          format: double
+          nullable: true
+        aut:
+          type: number
+          format: double
+          nullable: true
+        ann:
+          type: number
+          format: double
+          nullable: true
+        created_on:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_on:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - created_on
+        - dataset
+        - id
+        - updated_on
+        - year
+    DatasetEnum:
+      enum:
+        - air_frost
+        - raindays
+        - rainfall
+        - sunshine
+        - tmean
+        - tmin
+        - tmax
+      type: string
+      description: |-
+        * `air_frost` - Air Frost
+        * `raindays` - Rain Days ≥1mm
+        * `rainfall` - Rainfall
+        * `sunshine` - Sunshine
+        * `tmean` - Mean Temperature
+        * `tmin` - Minimum Temperature
+        * `tmax` - Maximum Temperature
+    PaginatedClimateRecordList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClimateRecord"
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
