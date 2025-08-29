@@ -9,63 +9,119 @@ paths:
       operationId: climate_list
       description: Climate Record ViewSet
       parameters:
-        - in: query
-          name: dataset
-          schema:
-            type: string
-        - name: limit
-          required: false
-          in: query
-          description: Number of results to return per page.
-          schema:
-            type: integer
-        - name: offset
-          required: false
-          in: query
-          description: The initial index from which to return the results.
-          schema:
-            type: integer
-        - in: query
-          name: year
-          schema:
-            type: integer
+      - in: query
+        name: dataset
+        schema:
+          type: string
+          enum:
+          - air_frost
+          - raindays
+          - rainfall
+          - sunshine
+          - tmax
+          - tmean
+          - tmin
+        description: |-
+          * `air_frost` - Air Frost
+          * `raindays` - Rain Days ≥1mm
+          * `rainfall` - Rainfall
+          * `sunshine` - Sunshine
+          * `tmean` - Mean Temperature
+          * `tmin` - Minimum Temperature
+          * `tmax` - Maximum Temperature
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: region
+        schema:
+          type: string
+          enum:
+          - East_Anglia
+          - England
+          - England_E_and_NE
+          - England_N
+          - England_NW_and_N_Wales
+          - England_S
+          - England_SE_and_Central_S
+          - England_SW_and_S_Wales
+          - England_and_Wales
+          - Midlands
+          - Northern_Ireland
+          - Scotland
+          - Scotland_E
+          - Scotland_N
+          - Scotland_W
+          - UK
+          - Wales
+        description: |-
+          * `UK` - UK
+          * `England` - England
+          * `Wales` - Wales
+          * `Scotland` - Scotland
+          * `Northern_Ireland` - Northern Ireland
+          * `England_and_Wales` - England and Wales
+          * `England_N` - England North
+          * `England_S` - England South
+          * `Scotland_N` - Scotland North
+          * `Scotland_E` - Scotland East
+          * `Scotland_W` - Scotland West
+          * `England_E_and_NE` - England East and NE
+          * `England_NW_and_N_Wales` - England NW and North Wales
+          * `Midlands` - Midlands
+          * `East_Anglia` - East Anglia
+          * `England_SW_and_S_Wales` - England SW and South Wales
+          * `England_SE_and_Central_S` - England SE and Central South
+      - in: query
+        name: year
+        schema:
+          type: integer
       tags:
-        - climate
+      - climate
       security:
-        - cookieAuth: []
-        - basicAuth: []
-        - {}
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedClimateRecordList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedClimateRecordList'
+          description: ''
   /api/climate/{id}/:
     get:
       operationId: climate_retrieve
       description: Climate Record ViewSet
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this climate record.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this climate record.
+        required: true
       tags:
-        - climate
+      - climate
       security:
-        - cookieAuth: []
-        - basicAuth: []
-        - {}
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ClimateRecord"
-          description: ""
+                $ref: '#/components/schemas/ClimateRecord'
+          description: ''
 components:
   schemas:
     ClimateRecord:
@@ -76,7 +132,9 @@ components:
           type: integer
           readOnly: true
         dataset:
-          $ref: "#/components/schemas/DatasetEnum"
+          $ref: '#/components/schemas/DatasetEnum'
+        region:
+          $ref: '#/components/schemas/RegionEnum'
         year:
           type: integer
           maximum: 9223372036854775807
@@ -159,20 +217,21 @@ components:
           format: date-time
           readOnly: true
       required:
-        - created_on
-        - dataset
-        - id
-        - updated_on
-        - year
+      - created_on
+      - dataset
+      - id
+      - region
+      - updated_on
+      - year
     DatasetEnum:
       enum:
-        - air_frost
-        - raindays
-        - rainfall
-        - sunshine
-        - tmean
-        - tmin
-        - tmax
+      - air_frost
+      - raindays
+      - rainfall
+      - sunshine
+      - tmean
+      - tmin
+      - tmax
       type: string
       description: |-
         * `air_frost` - Air Frost
@@ -185,8 +244,8 @@ components:
     PaginatedClimateRecordList:
       type: object
       required:
-        - count
-        - results
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -204,7 +263,45 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/ClimateRecord"
+            $ref: '#/components/schemas/ClimateRecord'
+    RegionEnum:
+      enum:
+      - UK
+      - England
+      - Wales
+      - Scotland
+      - Northern_Ireland
+      - England_and_Wales
+      - England_N
+      - England_S
+      - Scotland_N
+      - Scotland_E
+      - Scotland_W
+      - England_E_and_NE
+      - England_NW_and_N_Wales
+      - Midlands
+      - East_Anglia
+      - England_SW_and_S_Wales
+      - England_SE_and_Central_S
+      type: string
+      description: |-
+        * `UK` - UK
+        * `England` - England
+        * `Wales` - Wales
+        * `Scotland` - Scotland
+        * `Northern_Ireland` - Northern Ireland
+        * `England_and_Wales` - England and Wales
+        * `England_N` - England North
+        * `England_S` - England South
+        * `Scotland_N` - Scotland North
+        * `Scotland_E` - Scotland East
+        * `Scotland_W` - Scotland West
+        * `England_E_and_NE` - England East and NE
+        * `England_NW_and_N_Wales` - England NW and North Wales
+        * `Midlands` - Midlands
+        * `East_Anglia` - East Anglia
+        * `England_SW_and_S_Wales` - England SW and South Wales
+        * `England_SE_and_Central_S` - England SE and Central South
   securitySchemes:
     basicAuth:
       type: http
