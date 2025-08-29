@@ -2,29 +2,25 @@ import { useEffect, useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import './App.css';
 import { climateApi } from './api';
-import type { ClimateListRegionEnum, ClimateRecord, DatasetEnum } from './client';
+import { DatasetEnum, type ClimateListRegionEnum, type ClimateRecord } from './client';
 import type { ChartData, RegionOption } from './types';
-
-// Custom Hook to track window size
-function useWindowSize() {
-  const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return size;
-}
+import useWindowSize from './hooks';
 
 const lineColors = ['#ff7300', '#387908', '#0070ff', '#a83279', '#32a89e', '#ffbf00', '#8884d8'];
 const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 const years = Array.from({ length: 142 }, (_, i) => 1884 + i);
 const datasetsTypes: DatasetEnum[] = ['tmax', 'tmin', 'rainfall', 'raindays', 'sunshine', 'tmean', 'air_frost'];
+
+export const DatasetReadableMap: Record<DatasetEnum, string> = {
+  air_frost: 'Air Frost',
+  raindays: 'Raindays',
+  rainfall: 'Rainfall',
+  sunshine: 'Sunshine',
+  tmean: 'Temperature Mean',
+  tmin: 'Min Temperature',
+  tmax: 'Max Temperature',
+};
+
 const regions: RegionOption[] = [
   { value: 'UK', label: "UK" },
   { value: "England", label: "England" },
@@ -50,8 +46,6 @@ function App() {
   const [datasets, setDatasets] = useState<DatasetEnum[]>(datasetsTypes);
   const [data, setData] = useState<ChartData[]>([]);
   const [region, setRegion] = useState<ClimateListRegionEnum>('UK');
-
-  // Get window size
   const { width } = useWindowSize();
 
   useEffect(() => {
@@ -96,12 +90,11 @@ function App() {
   }, [year, datasets, region]);
 
   // Checkbox toggle handler
-  const handleDatasetToggle = (ds: DatasetEnum) => {
+  const handleDatasetToggle = (dataset: DatasetEnum) => {
     setDatasets((prev) =>
-      prev.includes(ds) ? prev.filter((d) => d !== ds) : [...prev, ds]
+      prev.includes(dataset) ? prev.filter((d) => d !== dataset) : [...prev, dataset]
     );
   };
-
   // Memoize chart data for performance optimization
   const memoizedData = useMemo(() => data, [data]);
 
@@ -129,16 +122,19 @@ function App() {
 
       {/* Dataset Checkboxes */}
       <div>
-        {datasetsTypes.map((ds) => (
-          <label key={ds}>
-            <input
-              type="checkbox"
-              checked={datasets.includes(ds)}
-              onChange={() => handleDatasetToggle(ds)}
-            />
-            {ds}
-          </label>
-        ))}
+        {Object.keys(DatasetEnum).map((key) => {
+          const dataset = DatasetEnum[key as keyof typeof DatasetEnum];
+          return (
+            <label key={dataset}>
+              <input
+                type="checkbox"
+                checked={datasets.includes(dataset)}
+                onChange={() => handleDatasetToggle(dataset)}
+              />
+              {DatasetReadableMap[dataset]}
+            </label>
+          );
+        })}
       </div>
 
       {/* Chart */}
@@ -147,7 +143,7 @@ function App() {
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
-          <Legend />
+          <Legend formatter={(value) => DatasetReadableMap[value as DatasetEnum]} />
           {datasets.map((ds, i) => (
             <Line
               key={ds}
