@@ -5,6 +5,22 @@ import { climateApi } from './api';
 import type { ClimateRecord, DatasetEnum } from './client';
 import type { ChartData } from './types';
 
+// Custom Hook to track window size
+function useWindowSize() {
+  const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}
+
 const datasetsTypes: DatasetEnum[] = ['tmax', 'tmin', 'rainfall', 'raindays', 'sunshine', 'tmean', 'air_frost'];
 const lineColors = ['#ff7300', '#387908', '#0070ff', '#a83279', '#32a89e', '#ffbf00', '#8884d8'];
 const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
@@ -14,6 +30,9 @@ function App() {
   const [year, setYear] = useState(2024);
   const [datasets, setDatasets] = useState<DatasetEnum[]>(datasetsTypes);
   const [data, setData] = useState<ChartData[]>([]);
+
+  // Get window size
+  const { width } = useWindowSize();
 
   useEffect(() => {
     async function fetchData() {
@@ -66,12 +85,9 @@ function App() {
   // Memoize chart data for performance optimization
   const memoizedData = useMemo(() => data, [data]);
 
-
-
   return (
     <div>
-      {/* Year Selector */}
-      <label className="mr-2">Year:</label>
+      <label>Year:</label>
       <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
         {years.map((y) => (
           <option key={y} value={y}>
@@ -81,7 +97,7 @@ function App() {
       </select>
 
       {/* Dataset Checkboxes */}
-      <div className="flex gap-2 mt-2">
+      <div>
         {datasetsTypes.map((ds) => (
           <label key={ds}>
             <input
@@ -95,20 +111,22 @@ function App() {
       </div>
 
       {/* Chart */}
-      <LineChart width={900} height={450} data={memoizedData}>
-        <XAxis dataKey="month" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        {datasets.map((ds, i) => (
-          <Line
-            key={ds}
-            type="monotone"
-            dataKey={ds}
-            stroke={lineColors[i % lineColors.length]}
-          />
-        ))}
-      </LineChart>
+      <div className="chart-container">
+        <LineChart width={width * 0.8} height={450} data={memoizedData}>
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {datasets.map((ds, i) => (
+            <Line
+              key={ds}
+              type="monotone"
+              dataKey={ds}
+              stroke={lineColors[i % lineColors.length]}
+            />
+          ))}
+        </LineChart>
+      </div>
     </div>
   );
 }
