@@ -1,3 +1,10 @@
+import type { ClimateListRegionEnum } from "./client";
+
+export interface RegionOption {
+  value: ClimateListRegionEnum;
+  label: string;
+}
+
 export interface ChartData {
   month: string;
   tmax?: number | null;

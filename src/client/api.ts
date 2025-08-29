@@ -43,6 +43,12 @@ export interface ClimateRecord {
     'dataset': DatasetEnum;
     /**
      * 
+     * @type {RegionEnum}
+     * @memberof ClimateRecord
+     */
+    'region': RegionEnum;
+    /**
+     * 
      * @type {number}
      * @memberof ClimateRecord
      */
@@ -214,6 +220,35 @@ export interface PaginatedClimateRecordList {
      */
     'results': Array<ClimateRecord>;
 }
+/**
+ * * `UK` - UK * `England` - England * `Wales` - Wales * `Scotland` - Scotland * `Northern_Ireland` - Northern Ireland * `England_and_Wales` - England and Wales * `England_N` - England North * `England_S` - England South * `Scotland_N` - Scotland North * `Scotland_E` - Scotland East * `Scotland_W` - Scotland West * `England_E_and_NE` - England East and NE * `England_NW_and_N_Wales` - England NW and North Wales * `Midlands` - Midlands * `East_Anglia` - East Anglia * `England_SW_and_S_Wales` - England SW and South Wales * `England_SE_and_Central_S` - England SE and Central South
+ * @export
+ * @enum {string}
+ */
+
+export const RegionEnum = {
+    Uk: 'UK',
+    England: 'England',
+    Wales: 'Wales',
+    Scotland: 'Scotland',
+    NorthernIreland: 'Northern_Ireland',
+    EnglandAndWales: 'England_and_Wales',
+    EnglandN: 'England_N',
+    EnglandS: 'England_S',
+    ScotlandN: 'Scotland_N',
+    ScotlandE: 'Scotland_E',
+    ScotlandW: 'Scotland_W',
+    EnglandEAndNe: 'England_E_and_NE',
+    EnglandNwAndNWales: 'England_NW_and_N_Wales',
+    Midlands: 'Midlands',
+    EastAnglia: 'East_Anglia',
+    EnglandSwAndSWales: 'England_SW_and_S_Wales',
+    EnglandSeAndCentralS: 'England_SE_and_Central_S'
+} as const;
+
+export type RegionEnum = typeof RegionEnum[keyof typeof RegionEnum];
+
+
 
 /**
  * ClimateApi - axios parameter creator
@@ -223,14 +258,15 @@ export const ClimateApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * Climate Record ViewSet
-         * @param {string} [dataset] 
+         * @param {ClimateListDatasetEnum} [dataset] * &#x60;air_frost&#x60; - Air Frost * &#x60;raindays&#x60; - Rain Days ≥1mm * &#x60;rainfall&#x60; - Rainfall * &#x60;sunshine&#x60; - Sunshine * &#x60;tmean&#x60; - Mean Temperature * &#x60;tmin&#x60; - Minimum Temperature * &#x60;tmax&#x60; - Maximum Temperature
          * @param {number} [limit] Number of results to return per page.
          * @param {number} [offset] The initial index from which to return the results.
+         * @param {ClimateListRegionEnum} [region] * &#x60;UK&#x60; - UK * &#x60;England&#x60; - England * &#x60;Wales&#x60; - Wales * &#x60;Scotland&#x60; - Scotland * &#x60;Northern_Ireland&#x60; - Northern Ireland * &#x60;England_and_Wales&#x60; - England and Wales * &#x60;England_N&#x60; - England North * &#x60;England_S&#x60; - England South * &#x60;Scotland_N&#x60; - Scotland North * &#x60;Scotland_E&#x60; - Scotland East * &#x60;Scotland_W&#x60; - Scotland West * &#x60;England_E_and_NE&#x60; - England East and NE * &#x60;England_NW_and_N_Wales&#x60; - England NW and North Wales * &#x60;Midlands&#x60; - Midlands * &#x60;East_Anglia&#x60; - East Anglia * &#x60;England_SW_and_S_Wales&#x60; - England SW and South Wales * &#x60;England_SE_and_Central_S&#x60; - England SE and Central South
          * @param {number} [year] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        climateList: async (dataset?: string, limit?: number, offset?: number, year?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        climateList: async (dataset?: ClimateListDatasetEnum, limit?: number, offset?: number, region?: ClimateListRegionEnum, year?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/climate/`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -259,6 +295,10 @@ export const ClimateApiAxiosParamCreator = function (configuration?: Configurati
 
             if (offset !== undefined) {
                 localVarQueryParameter['offset'] = offset;
+            }
+
+            if (region !== undefined) {
+                localVarQueryParameter['region'] = region;
             }
 
             if (year !== undefined) {
@@ -327,15 +367,16 @@ export const ClimateApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Climate Record ViewSet
-         * @param {string} [dataset] 
+         * @param {ClimateListDatasetEnum} [dataset] * &#x60;air_frost&#x60; - Air Frost * &#x60;raindays&#x60; - Rain Days ≥1mm * &#x60;rainfall&#x60; - Rainfall * &#x60;sunshine&#x60; - Sunshine * &#x60;tmean&#x60; - Mean Temperature * &#x60;tmin&#x60; - Minimum Temperature * &#x60;tmax&#x60; - Maximum Temperature
          * @param {number} [limit] Number of results to return per page.
          * @param {number} [offset] The initial index from which to return the results.
+         * @param {ClimateListRegionEnum} [region] * &#x60;UK&#x60; - UK * &#x60;England&#x60; - England * &#x60;Wales&#x60; - Wales * &#x60;Scotland&#x60; - Scotland * &#x60;Northern_Ireland&#x60; - Northern Ireland * &#x60;England_and_Wales&#x60; - England and Wales * &#x60;England_N&#x60; - England North * &#x60;England_S&#x60; - England South * &#x60;Scotland_N&#x60; - Scotland North * &#x60;Scotland_E&#x60; - Scotland East * &#x60;Scotland_W&#x60; - Scotland West * &#x60;England_E_and_NE&#x60; - England East and NE * &#x60;England_NW_and_N_Wales&#x60; - England NW and North Wales * &#x60;Midlands&#x60; - Midlands * &#x60;East_Anglia&#x60; - East Anglia * &#x60;England_SW_and_S_Wales&#x60; - England SW and South Wales * &#x60;England_SE_and_Central_S&#x60; - England SE and Central South
          * @param {number} [year] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async climateList(dataset?: string, limit?: number, offset?: number, year?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedClimateRecordList>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.climateList(dataset, limit, offset, year, options);
+        async climateList(dataset?: ClimateListDatasetEnum, limit?: number, offset?: number, region?: ClimateListRegionEnum, year?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedClimateRecordList>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.climateList(dataset, limit, offset, region, year, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ClimateApi.climateList']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -364,15 +405,16 @@ export const ClimateApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * Climate Record ViewSet
-         * @param {string} [dataset] 
+         * @param {ClimateListDatasetEnum} [dataset] * &#x60;air_frost&#x60; - Air Frost * &#x60;raindays&#x60; - Rain Days ≥1mm * &#x60;rainfall&#x60; - Rainfall * &#x60;sunshine&#x60; - Sunshine * &#x60;tmean&#x60; - Mean Temperature * &#x60;tmin&#x60; - Minimum Temperature * &#x60;tmax&#x60; - Maximum Temperature
          * @param {number} [limit] Number of results to return per page.
          * @param {number} [offset] The initial index from which to return the results.
+         * @param {ClimateListRegionEnum} [region] * &#x60;UK&#x60; - UK * &#x60;England&#x60; - England * &#x60;Wales&#x60; - Wales * &#x60;Scotland&#x60; - Scotland * &#x60;Northern_Ireland&#x60; - Northern Ireland * &#x60;England_and_Wales&#x60; - England and Wales * &#x60;England_N&#x60; - England North * &#x60;England_S&#x60; - England South * &#x60;Scotland_N&#x60; - Scotland North * &#x60;Scotland_E&#x60; - Scotland East * &#x60;Scotland_W&#x60; - Scotland West * &#x60;England_E_and_NE&#x60; - England East and NE * &#x60;England_NW_and_N_Wales&#x60; - England NW and North Wales * &#x60;Midlands&#x60; - Midlands * &#x60;East_Anglia&#x60; - East Anglia * &#x60;England_SW_and_S_Wales&#x60; - England SW and South Wales * &#x60;England_SE_and_Central_S&#x60; - England SE and Central South
          * @param {number} [year] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        climateList(dataset?: string, limit?: number, offset?: number, year?: number, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedClimateRecordList> {
-            return localVarFp.climateList(dataset, limit, offset, year, options).then((request) => request(axios, basePath));
+        climateList(dataset?: ClimateListDatasetEnum, limit?: number, offset?: number, region?: ClimateListRegionEnum, year?: number, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedClimateRecordList> {
+            return localVarFp.climateList(dataset, limit, offset, region, year, options).then((request) => request(axios, basePath));
         },
         /**
          * Climate Record ViewSet
@@ -395,16 +437,17 @@ export const ClimateApiFactory = function (configuration?: Configuration, basePa
 export class ClimateApi extends BaseAPI {
     /**
      * Climate Record ViewSet
-     * @param {string} [dataset] 
+     * @param {ClimateListDatasetEnum} [dataset] * &#x60;air_frost&#x60; - Air Frost * &#x60;raindays&#x60; - Rain Days ≥1mm * &#x60;rainfall&#x60; - Rainfall * &#x60;sunshine&#x60; - Sunshine * &#x60;tmean&#x60; - Mean Temperature * &#x60;tmin&#x60; - Minimum Temperature * &#x60;tmax&#x60; - Maximum Temperature
      * @param {number} [limit] Number of results to return per page.
      * @param {number} [offset] The initial index from which to return the results.
+     * @param {ClimateListRegionEnum} [region] * &#x60;UK&#x60; - UK * &#x60;England&#x60; - England * &#x60;Wales&#x60; - Wales * &#x60;Scotland&#x60; - Scotland * &#x60;Northern_Ireland&#x60; - Northern Ireland * &#x60;England_and_Wales&#x60; - England and Wales * &#x60;England_N&#x60; - England North * &#x60;England_S&#x60; - England South * &#x60;Scotland_N&#x60; - Scotland North * &#x60;Scotland_E&#x60; - Scotland East * &#x60;Scotland_W&#x60; - Scotland West * &#x60;England_E_and_NE&#x60; - England East and NE * &#x60;England_NW_and_N_Wales&#x60; - England NW and North Wales * &#x60;Midlands&#x60; - Midlands * &#x60;East_Anglia&#x60; - East Anglia * &#x60;England_SW_and_S_Wales&#x60; - England SW and South Wales * &#x60;England_SE_and_Central_S&#x60; - England SE and Central South
      * @param {number} [year] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ClimateApi
      */
-    public climateList(dataset?: string, limit?: number, offset?: number, year?: number, options?: RawAxiosRequestConfig) {
-        return ClimateApiFp(this.configuration).climateList(dataset, limit, offset, year, options).then((request) => request(this.axios, this.basePath));
+    public climateList(dataset?: ClimateListDatasetEnum, limit?: number, offset?: number, region?: ClimateListRegionEnum, year?: number, options?: RawAxiosRequestConfig) {
+        return ClimateApiFp(this.configuration).climateList(dataset, limit, offset, region, year, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -419,5 +462,41 @@ export class ClimateApi extends BaseAPI {
     }
 }
 
+/**
+ * @export
+ */
+export const ClimateListDatasetEnum = {
+    AirFrost: 'air_frost',
+    Raindays: 'raindays',
+    Rainfall: 'rainfall',
+    Sunshine: 'sunshine',
+    Tmax: 'tmax',
+    Tmean: 'tmean',
+    Tmin: 'tmin'
+} as const;
+export type ClimateListDatasetEnum = typeof ClimateListDatasetEnum[keyof typeof ClimateListDatasetEnum];
+/**
+ * @export
+ */
+export const ClimateListRegionEnum = {
+    EastAnglia: 'East_Anglia',
+    England: 'England',
+    EnglandEAndNe: 'England_E_and_NE',
+    EnglandN: 'England_N',
+    EnglandNwAndNWales: 'England_NW_and_N_Wales',
+    EnglandS: 'England_S',
+    EnglandSeAndCentralS: 'England_SE_and_Central_S',
+    EnglandSwAndSWales: 'England_SW_and_S_Wales',
+    EnglandAndWales: 'England_and_Wales',
+    Midlands: 'Midlands',
+    NorthernIreland: 'Northern_Ireland',
+    Scotland: 'Scotland',
+    ScotlandE: 'Scotland_E',
+    ScotlandN: 'Scotland_N',
+    ScotlandW: 'Scotland_W',
+    Uk: 'UK',
+    Wales: 'Wales'
+} as const;
+export type ClimateListRegionEnum = typeof ClimateListRegionEnum[keyof typeof ClimateListRegionEnum];
 
 
