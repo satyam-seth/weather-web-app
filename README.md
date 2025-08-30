@@ -25,3 +25,7 @@ npm i
 ```sh
 npm run dev
 ```
+
+## Related Project
+
+🔗 Backend API: [Weather Backend Repository](https://github.com/satyam-seth/weather-backend-app)
