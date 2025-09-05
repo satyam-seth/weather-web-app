@@ -46,46 +46,50 @@ function App() {
   const [datasets, setDatasets] = useState<DatasetEnum[]>(datasetsTypes);
   const [data, setData] = useState<ChartData[]>([]);
   const [region, setRegion] = useState<ClimateListRegionEnum>('UK');
+  const [error, setError] = useState<string | null>(null);
   const { width } = useWindowSize();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await climateApi.climateList(undefined, undefined, undefined, region, year);
+  async function fetchData() {
+    try {
+      setError(null);
+      const res = await climateApi.climateList(undefined, undefined, undefined, region, year);
 
-        const grouped: Record<DatasetEnum, Record<string, number>> = {
-          tmax: {},
-          tmin: {},
-          rainfall: {},
-          raindays: {},
-          sunshine: {},
-          tmean: {},
-          air_frost: {},
-        };
-        res.data.results.forEach((d: ClimateRecord) => {
-          grouped[d.dataset] = months.reduce((acc, m) => {
-            const value = d[m as keyof ClimateRecord];
-            acc[m] = typeof value === 'number' && !isNaN(value) ? value : 0;
-            return acc;
-          }, {} as Record<string, number>);
+      const grouped: Record<DatasetEnum, Record<string, number>> = {
+        tmax: {},
+        tmin: {},
+        rainfall: {},
+        raindays: {},
+        sunshine: {},
+        tmean: {},
+        air_frost: {},
+      };
+      res.data.results.forEach((d: ClimateRecord) => {
+        grouped[d.dataset] = months.reduce((acc, m) => {
+          const value = d[m as keyof ClimateRecord];
+          acc[m] = typeof value === 'number' && !isNaN(value) ? value : 0;
+          return acc;
+        }, {} as Record<string, number>);
+      });
+
+      // Merge into recharts data format
+      const chartData = months.map((m) => {
+        const row: ChartData = { month: m };
+        datasets.forEach((ds) => {
+          if (grouped[ds]) {
+            row[ds] = grouped[ds][m];
+          }
         });
+        return row;
+      });
 
-        // Merge into recharts data format
-        const chartData = months.map((m) => {
-          const row: ChartData = { month: m };
-          datasets.forEach((ds) => {
-            if (grouped[ds]) {
-              row[ds] = grouped[ds][m];
-            }
-          });
-          return row;
-        });
-
-        setData(chartData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+      setData(chartData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError("Failed to fetch climate data. Please try again.");
     }
+  }
+
+  useEffect(() => {
     fetchData();
   }, [year, datasets, region]);
 
@@ -154,6 +158,16 @@ function App() {
           ))}
         </LineChart>
       </div>
+
+      {/* Error message (non-blocking) */}
+      {error && (
+        <div style={{ color: "red", margin: "10px 0" }}>
+          {error}{" "}
+          <button onClick={fetchData} style={{ marginLeft: "10px" }}>
+            Retry
+          </button>
+        </div>
+      )}
     </div>
   );
 }
